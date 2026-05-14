@@ -1,9 +1,7 @@
 import * as pdfjs from 'pdfjs-dist';
 
-// Set worker source
-// Note: In typical Vite setups, we might need to copy the worker or use a CDN.
-// For simplicity in this environment, we'll try to use the build's worker if it's bundled correctly.
-pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
+// Use unpkg as it mirrors npm structure exactly and is more likely to have the latest version
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 export async function extractTextFromPDF(file: File): Promise<string> {
   const arrayBuffer = await file.arrayBuffer();
@@ -15,6 +13,7 @@ export async function extractTextFromPDF(file: File): Promise<string> {
     const page = await pdf.getPage(i);
     const textContent = await page.getTextContent();
     const pageText = textContent.items
+      .filter((item: any) => item.str !== undefined)
       .map((item: any) => item.str)
       .join(" ");
     fullText += pageText + "\n";
