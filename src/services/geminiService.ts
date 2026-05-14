@@ -16,7 +16,12 @@ interface Indicator {
 }
 
 export async function analyzeArticle(text: string): Promise<AnalysisResult> {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("API Key não encontrada. Verifique as configurações de Secrets.");
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
   
   const systemInstruction = `Você é um especialista acadêmico em Business Process Management (BPM). 
 Sua tarefa é analisar o texto de um artigo e identificar indicadores de flexibilidade de processo.
@@ -94,10 +99,14 @@ Retorne estritamente um objeto JSON.`;
     }
   });
 
+  if (!response.text) {
+    throw new Error("O modelo não retornou conteúdo válido.");
+  }
+
   try {
-    return JSON.parse(response.text);
+    return JSON.parse(response.text.trim());
   } catch (e) {
-    console.error("Failed to parse Gemini response:", e);
-    throw new Error("Erro ao processar a resposta do modelo AI.");
+    console.error("Failed to parse Gemini response:", e, response.text);
+    throw new Error("Erro ao processar a resposta estruturada da AI.");
   }
 }
