@@ -1,0 +1,6 @@
+{
+  "name": "BPM Flexibility Analyzer",
+  "description": "An academic tool for identifying Process Flexibility Indicators in research articles using Gemini AI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
